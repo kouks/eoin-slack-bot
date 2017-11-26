@@ -1,18 +1,8 @@
 package io.pavelkoch.eoin.rtm.events;
 
 import io.pavelkoch.eoin.rtm.Event;
-import io.pavelkoch.eoin.rtm.Listener;
-import io.pavelkoch.eoin.rtm.listeners.MessageListener;
 
 public class Message extends Event {
-    /**
-     * Dispatches the event to a provided listener.
-     */
-    @Override
-    public void dispatchTo(Listener listener) {
-        ((MessageListener) listener).onMessage(this, this.getResponseFactory());
-    }
-
     /**
      * @return The text field from the Json object
      */

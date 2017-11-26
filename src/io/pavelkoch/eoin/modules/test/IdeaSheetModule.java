@@ -2,20 +2,21 @@ package io.pavelkoch.eoin.modules.test;
 
 import io.pavelkoch.eoin.http.Request;
 import io.pavelkoch.eoin.http.Response;
-import io.pavelkoch.eoin.messaging.Attachment;
 import io.pavelkoch.eoin.messaging.ResponseFactory;
+import io.pavelkoch.eoin.modules.Module;
+import io.pavelkoch.eoin.rtm.Events;
+import io.pavelkoch.eoin.rtm.Listener;
 import io.pavelkoch.eoin.rtm.events.Message;
-import io.pavelkoch.eoin.rtm.listeners.MessageListener;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 
-public class IdeaSheetModule implements MessageListener {
+public class IdeaSheetModule extends Module {
     /**
      * @param event The event that this listener is assigned to
      * @param response The response factory
      */
-    @Override
+    @Listener(event = Events.MESSAGE)
     public void onMessage(Message event, ResponseFactory response) {
         if (! event.text().toLowerCase().matches("^\\$.*")) {
             return;

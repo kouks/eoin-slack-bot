@@ -1,10 +1,12 @@
 package io.pavelkoch.eoin.rtm;
 
+import io.pavelkoch.eoin.modules.Module;
 import io.pavelkoch.eoin.rtm.events.Message;
 import io.pavelkoch.eoin.rtm.events.UserTyping;
 import org.json.JSONObject;
 
 import javax.websocket.RemoteEndpoint;
+import java.util.ArrayList;
 
 public enum Events {
     MESSAGE("message", new Message()),
@@ -30,34 +32,25 @@ public enum Events {
     }
 
     /**
-     * @param listener Listened to be added.
-     * @return This class for chaining
-     */
-    Events addListener(Listener listener) {
-        this.event.addListener(listener);
-
-        return this;
-    }
-
-    /**
      * Assigns the json data from the slack message and a remote connection instance
      * to be dispatched with the event.
      *
      * @param json The json received from slack
      * @param remote The remote web socket connection
+     * @param modules All available modules for the slack bot
      * @return This class for chaining
      */
-    Events with(JSONObject json, RemoteEndpoint.Basic remote) {
-        this.event.with(json, remote);
+    Events with(JSONObject json, RemoteEndpoint.Basic remote, ArrayList<Module> modules) {
+        this.event.with(json, remote, modules);
 
         return this;
     }
 
     /**
-     * Dispatches the event to all available listeners.
+     * Dispatches the event to all available listener methods.
      */
     void dispatch() {
-        this.event.dispatch();
+        this.event.dispatch(this);
     }
 
     /**
