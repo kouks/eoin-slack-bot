@@ -69,7 +69,6 @@ public class ResponseFactory {
      */
     public void send() {
         try {
-            System.out.println(this.response.toString());
             this.remote.sendText(this.response.toString());
         } catch (IOException e) {
             e.printStackTrace();

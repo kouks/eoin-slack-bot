@@ -1,7 +1,7 @@
 package io.pavelkoch.eoin.rtm;
 
 import io.pavelkoch.eoin.modules.Module;
-import io.pavelkoch.eoin.modules.test.IdeaSheetModule;
+import io.pavelkoch.eoin.modules.ideasheet.IdeaSheetModule;
 import org.json.JSONObject;
 
 import javax.websocket.MessageHandler;
@@ -15,7 +15,7 @@ public class Handler implements MessageHandler.Whole<String> {
     private final Session session;
 
     /**
-     * The remote web socket connection.
+     * The array list of all available modules.
      */
     private final ArrayList<Module> modules = new ArrayList<>();
 
@@ -42,14 +42,14 @@ public class Handler implements MessageHandler.Whole<String> {
         System.out.println(message);
 
         if (event != null) {
-            event.with(json, this.session.getBasicRemote()).dispatch(this.modules);
+            event.with(json, this.session.getBasicRemote(), this.modules).dispatch();
         }
     }
 
     /**
-     * We register all available listeners.
+     * We register all available modules.
      */
     private void registerModules() {
-        modules.add(new IdeaSheetModule());
+        this.modules.add(new IdeaSheetModule());
     }
 }

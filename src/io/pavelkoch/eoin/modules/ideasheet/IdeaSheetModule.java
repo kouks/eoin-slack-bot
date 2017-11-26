@@ -1,4 +1,4 @@
-package io.pavelkoch.eoin.modules.test;
+package io.pavelkoch.eoin.modules.ideasheet;
 
 import io.pavelkoch.eoin.http.Request;
 import io.pavelkoch.eoin.http.Response;
@@ -36,6 +36,5 @@ public class IdeaSheetModule extends Module {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }

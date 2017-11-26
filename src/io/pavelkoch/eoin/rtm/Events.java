@@ -54,13 +54,6 @@ public enum Events {
     }
 
     /**
-     * @return The event name corresponding to the slack event type.
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
      * Returns an event instance corresponding to the slack event type.
      *
      * @param name The slack event name
@@ -68,11 +61,19 @@ public enum Events {
      */
     public static Events byName(String name) {
         for (Events event : Events.values()) {
-            if (event.getName().equals(name)) {
+            if (event.toString().equals(name)) {
                 return event;
             }
         }
 
         return null;
+    }
+
+    /**
+     * @return The event name corresponding to the slack event type.
+     */
+    @Override
+    public String toString() {
+        return this.name;
     }
 }
