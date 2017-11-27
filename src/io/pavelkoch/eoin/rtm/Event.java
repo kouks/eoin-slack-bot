@@ -78,7 +78,8 @@ public abstract class Event {
      * @return If the controller accepts the message
      */
     private boolean controllerWantsPattern(Method controller) {
-        return this.message.has("text") && this.message.getString("text").matches(controller.getAnnotation(Controller.class).pattern());
+        return !this.message.has("text") || this.message.getString("text").matches(controller.getAnnotation(Controller.class).pattern());
+
     }
 
     /**

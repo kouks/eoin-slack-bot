@@ -41,16 +41,7 @@ public class Client {
 
         // We attempt to establish the connection while
         // assigning the message handler to the Handler class
-        client.connectToServer(
-                new Endpoint() {
-                    @Override
-                    public void onOpen(Session session, EndpointConfig config) {
-                        session.addMessageHandler(new Handler(session));
-                    }
-                },
-                ClientEndpointConfig.Builder.create().build(),
-                this.uri
-        );
+        client.connectToServer(new EoinEndpoint(), ClientEndpointConfig.Builder.create().build(), this.uri);
 
         // We set the default wait timer to 10 minutes.
         client.getExecutorService().awaitTermination(10, TimeUnit.MINUTES);
@@ -66,5 +57,21 @@ public class Client {
         sslEngineConfigurator.setHostVerificationEnabled(false);
 
         return sslEngineConfigurator;
+    }
+
+    /**
+     * The endpoint inner class.
+     */
+    public class EoinEndpoint extends Endpoint {
+        /**
+         * Fired upon opening the web socket session.
+         *
+         * @param session The current web socket session
+         * @param config The eoin endpoint configuration
+         */
+        @Override
+        public void onOpen(Session session, EndpointConfig config) {
+            session.addMessageHandler(new Handler(session));
+        }
     }
 }

@@ -8,19 +8,19 @@ public enum EventType {
     USER_TYPING(new UserTyping());
 
     /**
-     * The event class instance.
+     * The event implementation class instance.
      */
     private final Event event;
 
     /**
-     * @param event The event class instance
+     * @param event The event implementation class instance
      */
     EventType(Event event) {
         this.event = event;
     }
 
     /**
-     * @return The event implementation for this event type.
+     * @return The event implementation class instance
      */
     public Event getEvent() {
         return this.event;

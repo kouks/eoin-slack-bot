@@ -36,11 +36,17 @@ public class Handler implements MessageHandler.Whole<String> {
      */
     @Override
     public void onMessage(String rawMessage) {
-        JSONObject message = new JSONObject(rawMessage);
-        EventType eventType = EventType.fromString(message.getString("type"));
-
         System.out.println(rawMessage);
 
+        // Creating a json object out of the received message
+        JSONObject message = new JSONObject(rawMessage);
+
+        // Finding the event type from the event type enum based
+        // on the slack event type string
+        EventType eventType = EventType.fromString(message.getString("type"));
+
+        // If it is an event that corresponds to our event type enum,
+        // fire this event for all of our modules.
         if (eventType != null) {
             eventType.getEvent().dispatch(eventType, message, this.session, this.modules);
         }
@@ -51,6 +57,8 @@ public class Handler implements MessageHandler.Whole<String> {
      * is the subclass of Module.
      */
     private void discoverModules() {
+        // To discover all available modules, we use the google reflections library,
+        // looping through all subclasses of our abstract module class.
         for (Class <? extends Module> module : new Reflections().getSubTypesOf(Module.class)) {
             try {
                 this.modules.add(module.newInstance());
