@@ -2,15 +2,15 @@ package io.pavelkoch.eoin.rtm;
 
 import io.pavelkoch.eoin.messaging.ResponseFactory;
 import io.pavelkoch.eoin.modules.Module;
+import io.pavelkoch.eoin.rtm.events.concerns.HasText;
 import org.json.JSONObject;
 
-import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-public abstract class Event {
+public abstract class Event implements InteractsWithMessage {
     /**
      * The json message received from the web socket.
      */
@@ -26,6 +26,11 @@ public abstract class Event {
      */
     public Session session() {
         return this.session;
+    }
+
+    @Override
+    public JSONObject getMessage() {
+        return this.message;
     }
 
     /**
@@ -78,7 +83,7 @@ public abstract class Event {
      * @return If the controller accepts the message
      */
     private boolean controllerWantsPattern(Method controller) {
-        return !this.message.has("text") || this.message.getString("text").matches(controller.getAnnotation(Controller.class).pattern());
+        return !(this instanceof HasText) || this.message.getString("text").matches(controller.getAnnotation(Controller.class).pattern());
 
     }
 
