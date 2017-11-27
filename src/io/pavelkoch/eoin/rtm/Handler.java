@@ -1,8 +1,8 @@
 package io.pavelkoch.eoin.rtm;
 
 import io.pavelkoch.eoin.modules.Module;
-import io.pavelkoch.eoin.modules.ideasheet.IdeaSheetModule;
 import org.json.JSONObject;
+import org.reflections.Reflections;
 
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
@@ -10,46 +10,53 @@ import java.util.ArrayList;
 
 public class Handler implements MessageHandler.Whole<String> {
     /**
-     * The remote web socket connection.
+     * The current web socket session.
      */
     private final Session session;
 
     /**
-     * The array list of all available modules.
+     * The list of all available modules.
      */
-    private final ArrayList<Module> modules = new ArrayList<>();
+    private ArrayList<Module> modules = new ArrayList<>();
 
     /**
-     * @param session The web socket session
+     * @param session The current web socket session
      */
     Handler(Session session) {
         this.session = session;
 
-        this.registerModules();
+        this.discoverModules();
     }
 
     /**
      * This method handles accepting the message as well as finding
      * the suitable event, calling the dispatch method on it then.
      *
-     * @param message The message that is received through the web socket
+     * @param rawMessage The message that is received through the web socket
      */
     @Override
-    public void onMessage(String message) {
-        JSONObject json = new JSONObject(message);
-        Events event = Events.byName(json.getString("type"));
+    public void onMessage(String rawMessage) {
+        JSONObject message = new JSONObject(rawMessage);
+        EventType eventType = EventType.fromString(message.getString("type"));
 
-        System.out.println(message);
+        System.out.println(rawMessage);
 
-        if (event != null) {
-            event.with(json, this.session.getBasicRemote(), this.modules).dispatch();
+        if (eventType != null) {
+            eventType.getEvent().dispatch(eventType, message, this.session, this.modules);
         }
     }
 
     /**
-     * We register all available modules.
+     * Discovers all the slack bot modules by searching for any class that
+     * is the subclass of Module.
      */
-    private void registerModules() {
-        this.modules.add(new IdeaSheetModule());
+    private void discoverModules() {
+        for (Class <? extends Module> module : new Reflections().getSubTypesOf(Module.class)) {
+            try {
+                this.modules.add(module.newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

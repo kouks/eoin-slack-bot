@@ -5,84 +5,93 @@ import io.pavelkoch.eoin.modules.Module;
 import org.json.JSONObject;
 
 import javax.websocket.RemoteEndpoint;
+import javax.websocket.Session;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public abstract class Event {
     /**
-     * The Json object received from the web socket
+     * The json message received from the web socket.
      */
-    protected JSONObject json;
+    protected JSONObject message;
 
     /**
-     * The remote web socket connection.
+     * The current web socket session.
      */
-    private RemoteEndpoint.Basic remote;
+    private Session session;
 
     /**
-     * All available modules for the slack bot.
+     * @return The current web socket session
      */
-    private ArrayList<Module> modules;
-
-    /**
-     * We set the Json object and the remote connection for the event to use
-     * later on.
-     *
-     * @param json The Json object receive from the web socket
-     * @param remote The remote web socket connection
-     * @param modules All available modules for the slack bot
-     */
-    void with(JSONObject json, RemoteEndpoint.Basic remote, ArrayList<Module> modules) {
-        this.json = json;
-        this.remote = remote;
-        this.modules = modules;
+    public Session session() {
+        return this.session;
     }
 
     /**
-     * Dispatches the event to all listener methods on the module.
+     * Dispatches the event to all suitable controllers.
      *
-     * @param event The event that occurred
+     * @param eventType The event type that occurred
+     * @param message The message message received from the web socket
+     * @param session The current web socket session
+     * @param modules All available modules for the slack bot
      */
-    void dispatch(Events event) {
-        for (Module module : this.modules) {
-            this.dispatchForSuitableMethods(module.getClass().getMethods(), module, event);
+    void dispatch(EventType eventType, JSONObject message, Session session, ArrayList<Module> modules) {
+        this.message = message;
+        this.session = session;
+
+        for (Module module : modules) {
+            this.dispatchForSuitableControllers(module.getClass().getMethods(), module, eventType);
         }
     }
 
     /**
-     * Dispatches the event to annotated methods.
+     * Dispatches the event to controllers.
      *
      * @param methods All of the module class methods
      * @param module The module to be triggered
-     * @param event The event that should be triggered
+     * @param eventType The event type that should be triggered
      */
-    private void dispatchForSuitableMethods(Method[] methods, Module module, Events event) {
+    private void dispatchForSuitableControllers(Method[] methods, Module module, EventType eventType) {
         for (Method method : methods) {
-            if (method.getAnnotation(Listener.class).event() == event) {
-                this.invokeMethod(method, module);
+            if (this.methodIsControllerFor(eventType, method) && this.controllerWantsPattern(method)) {
+                this.invokeController(method, module);
             }
         }
     }
 
     /**
-     * Invokes a listener method on provided module.
+     * Determines whether the method is a suitable controller for provided event.
      *
-     * @param method The method to be invoked
-     * @param module The module that is this method invoked on
+     * @param eventType The event type to be matched
+     * @param method The wannabe controller
+     * @return If the method is a suitable controller
      */
-    private void invokeMethod(Method method, Module module) {
-        try {
-            method.invoke(module, this, this.getResponseFactory());
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
+    private boolean methodIsControllerFor(EventType eventType, Method method) {
+        return method.getAnnotation(Controller.class).event() == eventType;
     }
 
     /**
-     * @return A new response factory instance
+     * Determines whether the controllers accepts a message based on provided pattern.
+     *
+     * @param controller The controller
+     * @return If the controller accepts the message
      */
-    private ResponseFactory getResponseFactory() {
-        return new ResponseFactory(this.remote);
+    private boolean controllerWantsPattern(Method controller) {
+        return this.message.has("text") && this.message.getString("text").matches(controller.getAnnotation(Controller.class).pattern());
+    }
+
+    /**
+     * Invokes a controller for a module.
+     *
+     * @param controller The method to be invoked
+     * @param module The module that is this method invoked on
+     */
+    private void invokeController(Method controller, Module module) {
+        try {
+            controller.invoke(module, this, new ResponseFactory(this.session.getBasicRemote()));
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 }

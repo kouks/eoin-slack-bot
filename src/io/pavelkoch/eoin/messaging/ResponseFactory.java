@@ -57,9 +57,14 @@ public class ResponseFactory {
      * @return This class for chaining
      */
     public ResponseFactory attach(Function<Attachment, Attachment> callback) {
-        JSONArray attachment = new JSONArray().put(callback.apply(new Attachment()).toJson());
+        // If there are no attachments yet, create an empty json array
+        if (! this.response.has("attachments")) {
+            this.response.put("attachments", new JSONArray());
+        }
 
-        this.response.put("attachments", attachment);
+        // Then add our attachment to the array.
+        JSONArray attachments = this.response.getJSONArray("attachments");
+        attachments.put(callback.apply(new Attachment()).toJson());
 
         return this;
     }

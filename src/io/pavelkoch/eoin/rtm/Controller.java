@@ -7,9 +7,14 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Listener {
+public @interface Controller {
     /**
-     * @return The event this listener reacts to
+     * @return The event this controller reacts to
      */
-    Events event();
+    EventType event();
+
+    /**
+     * @return The pattern that is needed to be matched in order to invoke the controller.
+     */
+    String pattern() default "*";
 }
