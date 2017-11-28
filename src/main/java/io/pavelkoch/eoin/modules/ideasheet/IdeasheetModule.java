@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-public class IdeasheetModule extends Module {
+public class IdeasheetModule {
     /**
      * Crates a new idea on the ideasheet app.
      *

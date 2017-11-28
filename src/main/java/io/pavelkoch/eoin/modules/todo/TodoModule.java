@@ -9,7 +9,7 @@ import io.pavelkoch.eoin.rtm.messaging.Response;
 import io.pavelkoch.eoin.modules.Module;
 import io.pavelkoch.eoin.rtm.events.Message;
 
-public class TodoModule extends Module {
+public class TodoModule {
 
     @Controller(event = EventType.HELLO)
     public void runTodoReminder(Hello event, Response response) {
