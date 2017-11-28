@@ -35,7 +35,7 @@ public abstract class Event implements InteractsWithMessage {
     }};
 
     /**
-     * Dispatches the event to all suitable controllers.
+     * Dispatches the event to all suitable listeners, using predefined dispatchers.
      *
      * @param eventType The event type that occurred
      * @param message The json message received from the web socket
