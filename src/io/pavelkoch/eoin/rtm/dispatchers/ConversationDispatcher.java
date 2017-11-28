@@ -88,12 +88,12 @@ public class ConversationDispatcher implements Dispatcher {
 
         // We find the current conversation method by getting a method from the map
         // with the key that is stored on the conversation class.
-        Method currentMethod = conversationMethods.get(conversation.getNextMethod());
+        Method currentMethod = conversationMethods.get(conversation.getNextStage());
         Dialogue annotation = currentMethod.getAnnotation(Dialogue.class);
 
         // We check whether the method accepts the pattern in the message
         if (this.conversationMatchesPattern(annotation.pattern())) {
-            conversation.setNextMethod(annotation.next());
+            conversation.setNextStage(annotation.next());
             conversation.pushMessageToHistory(currentMethod.getName(), this.event.text());
 
             this.invokeConversation(module, currentMethod, conversation);
@@ -157,7 +157,7 @@ public class ConversationDispatcher implements Dispatcher {
      * @param conversation The conversation to be removed
      */
     private void removeConversationIfEnded(ConversationStore conversation) {
-        if (conversation.getNextMethod().equals("")) {
+        if (conversation.getNextStage().equals("")) {
             conversation.stop();
         }
     }
