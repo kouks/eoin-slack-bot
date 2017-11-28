@@ -44,11 +44,20 @@ public class ConversationStore implements Conversation {
     }
 
     /**
-     * Skips to a provided stage in conversation by the method name.
+     * Syntax sugar for setting next stage.
      *
      * @param stage The stage to be skipped to
      */
     public void skip(String stage) {
+        this.setNextStage(stage);
+    }
+
+    /**
+     * Syntax sugar for setting next stage.
+     *
+     * @param stage The stage to be repeated
+     */
+    public void repeat(String stage) {
         this.setNextStage(stage);
     }
 

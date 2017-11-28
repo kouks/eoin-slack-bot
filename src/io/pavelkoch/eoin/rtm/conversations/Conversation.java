@@ -11,11 +11,18 @@ public interface Conversation {
     String history(String stage);
 
     /**
-     * Skips to a provided stage in conversation corresponding to the method name.
+     * Syntax sugar for setting next stage.
      *
      * @param stage The stage to be skipped to
      */
     void skip(String stage);
+
+    /**
+     * Syntax sugar for setting next stage.
+     *
+     * @param stage The stage to be repeated
+     */
+    void repeat(String stage);
 
     /**
      * Stops the conversation and removes it from the store.

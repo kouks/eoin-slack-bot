@@ -28,7 +28,7 @@ public class TodoModule extends Module {
                     .text("sorry, this is not a valid time format, maybe try again?")
                     .send();
 
-            conversation.skip("addTodoDueTime");
+            conversation.repeat("addTodoDueTime");
             return;
         }
 
