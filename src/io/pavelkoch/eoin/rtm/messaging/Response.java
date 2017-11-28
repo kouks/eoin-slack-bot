@@ -1,4 +1,4 @@
-package io.pavelkoch.eoin.messaging;
+package io.pavelkoch.eoin.rtm.messaging;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -7,7 +7,7 @@ import javax.websocket.RemoteEndpoint;
 import java.io.IOException;
 import java.util.function.Function;
 
-public class ResponseFactory {
+public class Response {
     /**
      * The remote web socket connections we want to respond to.
      */
@@ -21,19 +21,19 @@ public class ResponseFactory {
     /**
      * @param remote The remote web socket connection we want to respond to
      */
-    public ResponseFactory(RemoteEndpoint.Basic remote) {
+    public Response(RemoteEndpoint.Basic remote) {
         this.remote = remote;
     }
 
     /**
-     * Adds the message field to the response.
+     * Adds the text field to the response.
      *
-     * @param message The message to be added
+     * @param text The text to be added
      * @return This class for chaining
      */
-    public ResponseFactory message(String message) {
+    public Response text(String text) {
         this.response.put("type", "message");
-        this.response.put("text", message);
+        this.response.put("text", text);
 
         return this;
     }
@@ -44,7 +44,7 @@ public class ResponseFactory {
      * @param channel The channel be responded to
      * @return This class for chaining
      */
-    public ResponseFactory channel(String channel) {
+    public Response channel(String channel) {
         this.response.put("channel", channel);
 
         return this;
@@ -56,7 +56,7 @@ public class ResponseFactory {
      * @param callback That the attachment builder is sent to.
      * @return This class for chaining
      */
-    public ResponseFactory attach(Function<Attachment, Attachment> callback) {
+    public Response attach(Function<Attachment, Attachment> callback) {
         // If there are no attachments yet, create an empty json array
         if (! this.response.has("attachments")) {
             this.response.put("attachments", new JSONArray());

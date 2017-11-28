@@ -1,4 +1,4 @@
-package io.pavelkoch.eoin.messaging;
+package io.pavelkoch.eoin.rtm.messaging;
 
 import org.json.JSONObject;
 

@@ -1,9 +1,11 @@
 package io.pavelkoch.eoin.rtm;
 
+import io.pavelkoch.eoin.rtm.events.Hello;
 import io.pavelkoch.eoin.rtm.events.Message;
 import io.pavelkoch.eoin.rtm.events.UserTyping;
 
 public enum EventType {
+    HELLO(new Hello()),
     MESSAGE(new Message()),
     USER_TYPING(new UserTyping());
 

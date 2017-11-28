@@ -1,14 +1,19 @@
 package io.pavelkoch.eoin.rtm;
 
-import io.pavelkoch.eoin.messaging.ResponseFactory;
+import io.pavelkoch.eoin.rtm.dispatchers.ControllerDispatcher;
+import io.pavelkoch.eoin.rtm.dispatchers.ConversationDispatcher;
+import io.pavelkoch.eoin.rtm.events.Message;
+import io.pavelkoch.eoin.rtm.messaging.Response;
 import io.pavelkoch.eoin.modules.Module;
 import io.pavelkoch.eoin.rtm.events.concerns.HasText;
 import org.json.JSONObject;
 
 import javax.websocket.Session;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Event implements InteractsWithMessage {
     /**
@@ -22,22 +27,18 @@ public abstract class Event implements InteractsWithMessage {
     private Session session;
 
     /**
-     * @return The current web socket session
+     * All available dispatcher types.
      */
-    public Session session() {
-        return this.session;
-    }
-
-    @Override
-    public JSONObject getMessage() {
-        return this.message;
-    }
+    private List<Dispatcher> dispatchers = new ArrayList<Dispatcher>() {{
+        add(new ControllerDispatcher());
+        add(new ConversationDispatcher());
+    }};
 
     /**
      * Dispatches the event to all suitable controllers.
      *
      * @param eventType The event type that occurred
-     * @param message The message message received from the web socket
+     * @param message The json message received from the web socket
      * @param session The current web socket session
      * @param modules All available modules for the slack bot
      */
@@ -45,59 +46,23 @@ public abstract class Event implements InteractsWithMessage {
         this.message = message;
         this.session = session;
 
-        for (Module module : modules) {
-            this.dispatchForSuitableControllers(module.getClass().getMethods(), module, eventType);
+        for (Dispatcher dispatcher : this.dispatchers) {
+            dispatcher.dispatch(eventType, this, modules);
         }
     }
 
     /**
-     * Dispatches the event to controllers.
-     *
-     * @param methods All of the module class methods
-     * @param module The module to be triggered
-     * @param eventType The event type that should be triggered
+     * @return The current web socket session
      */
-    private void dispatchForSuitableControllers(Method[] methods, Module module, EventType eventType) {
-        for (Method method : methods) {
-            if (this.methodIsControllerFor(eventType, method) && this.controllerWantsPattern(method)) {
-                this.invokeController(method, module);
-            }
-        }
+    public Session session() {
+        return this.session;
     }
 
     /**
-     * Determines whether the method is a suitable controller for provided event.
-     *
-     * @param eventType The event type to be matched
-     * @param method The wannabe controller
-     * @return If the method is a suitable controller
+     * @return The json message received through web sockets
      */
-    private boolean methodIsControllerFor(EventType eventType, Method method) {
-        return method.getAnnotation(Controller.class).event() == eventType;
-    }
-
-    /**
-     * Determines whether the controllers accepts a message based on provided pattern.
-     *
-     * @param controller The controller
-     * @return If the controller accepts the message
-     */
-    private boolean controllerWantsPattern(Method controller) {
-        return !(this instanceof HasText) || this.message.getString("text").matches(controller.getAnnotation(Controller.class).pattern());
-
-    }
-
-    /**
-     * Invokes a controller for a module.
-     *
-     * @param controller The method to be invoked
-     * @param module The module that is this method invoked on
-     */
-    private void invokeController(Method controller, Module module) {
-        try {
-            controller.invoke(module, this, new ResponseFactory(this.session.getBasicRemote()));
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public JSONObject getMessage() {
+        return this.message;
     }
 }

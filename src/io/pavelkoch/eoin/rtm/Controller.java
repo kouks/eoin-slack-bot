@@ -16,5 +16,5 @@ public @interface Controller {
     /**
      * @return The pattern that is needed to be matched in order to invoke the controller.
      */
-    String pattern() default "*";
+    String pattern() default ".*";
 }
