@@ -9,6 +9,7 @@ import io.pavelkoch.eoin.rtm.Client;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class Eoin {
     /**
@@ -17,6 +18,8 @@ public class Eoin {
      * @param args The console arguments
      */
     public static void main(String[] args) {
+        Logger.getLogger("eoin").info("asd");
+
         try {
             // We boot our glorious slack bot.
             new Eoin().boot();
