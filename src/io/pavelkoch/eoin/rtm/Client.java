@@ -43,8 +43,8 @@ public class Client {
         // assigning the message handler to the Handler class
         client.connectToServer(new EoinEndpoint(), ClientEndpointConfig.Builder.create().build(), this.uri);
 
-        // We set the default wait timer to 10 minutes.
-        client.getExecutorService().awaitTermination(10, TimeUnit.MINUTES);
+        // We set the default wait timer to a day xd.
+        client.getExecutorService().awaitTermination(1, TimeUnit.DAYS);
     }
 
     /**

@@ -32,8 +32,21 @@ public class Request {
     public Response post(Map<String, String> data) throws IOException {
         this.http.setDoOutput(true);
         this.http.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        this.http.setRequestProperty("Accept", "application/json");
 
         return this.request("POST", data);
+    }
+
+    /**
+     * Sending an HTTP GET request.
+     *
+     * @return Response from the request
+     * @throws IOException If the output stream does not accept the data
+     */
+    public Response get() throws IOException {
+        this.http.setRequestProperty("Accept", "application/json");
+
+        return this.request("GET", null);
     }
 
     /**
@@ -48,7 +61,10 @@ public class Request {
     private Response request(String method, Map<String, String> data) throws IOException {
         this.http.setRequestMethod(method);
         this.http.connect();
-        this.http.getOutputStream().write(this.parseData(data));
+
+        if (data != null) {
+            this.http.getOutputStream().write(this.parseData(data));
+        }
 
         return new Response(this.http.getInputStream());
     }
