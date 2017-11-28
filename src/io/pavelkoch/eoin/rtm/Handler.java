@@ -48,7 +48,11 @@ public class Handler implements MessageHandler.Whole<String> {
         // If it is an event that corresponds to our event type enum,
         // fire this event for all of our modules.
         if (eventType != null) {
-            eventType.getEvent().dispatch(eventType, message, this.session, this.modules);
+            try {
+                eventType.getEvent().dispatch(eventType, message, this.session, this.modules);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

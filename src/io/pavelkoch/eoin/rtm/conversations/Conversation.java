@@ -1,5 +1,7 @@
 package io.pavelkoch.eoin.rtm.conversations;
 
+import io.pavelkoch.eoin.rtm.events.Message;
+
 public interface Conversation {
     /**
      * Finds a message in the conversation history based on provided stage
@@ -8,7 +10,7 @@ public interface Conversation {
      * @param stage The stage that the message is recovered from
      * @return The message from provided stage of conversation
      */
-    String history(String stage);
+    Message history(String stage);
 
     /**
      * Syntax sugar for setting next stage.

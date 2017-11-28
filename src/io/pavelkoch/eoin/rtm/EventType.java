@@ -5,27 +5,29 @@ import io.pavelkoch.eoin.rtm.events.Message;
 import io.pavelkoch.eoin.rtm.events.UserTyping;
 
 public enum EventType {
-    HELLO(new Hello()),
-    MESSAGE(new Message()),
-    USER_TYPING(new UserTyping());
+    HELLO(Hello.class),
+    MESSAGE(Message.class),
+    USER_TYPING(UserTyping.class);
 
     /**
-     * The event implementation class instance.
+     * The event implementation class.
      */
-    private final Event event;
+    private final Class<? extends Event> event;
 
     /**
-     * @param event The event implementation class instance
+     * @param event The event implementation class
      */
-    EventType(Event event) {
+    EventType(Class<? extends Event> event) {
         this.event = event;
     }
 
     /**
      * @return The event implementation class instance
+     * @throws IllegalAccessException If the constructor is private
+     * @throws InstantiationException If there was a problem instantiating the event implementation.
      */
-    public Event getEvent() {
-        return this.event;
+    public Event getEvent() throws IllegalAccessException, InstantiationException {
+        return this.event.newInstance();
     }
 
     /**

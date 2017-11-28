@@ -1,5 +1,7 @@
 package io.pavelkoch.eoin.rtm.conversations;
 
+import io.pavelkoch.eoin.rtm.events.Message;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +14,7 @@ public class ConversationStore implements Conversation {
     /**
      * The conversation history mapped with a method name.
      */
-    private Map<String, String> history = new HashMap<>();
+    private Map<String, Message> history = new HashMap<>();
 
     /**
      * The user that is leading the conversation.
@@ -34,12 +36,12 @@ public class ConversationStore implements Conversation {
     }
 
     /**
-     * Finds a message in the conversation history based on provided method name.
+     * Finds a message event in the conversation history based on provided method name.
      *
      * @param stage The stage that the message is recovered from
-     * @return The message from provided stage of conversation
+     * @return The message event from provided stage of conversation
      */
-    public String history(String stage) {
+    public Message history(String stage) {
         return this.history.get(stage);
     }
 
@@ -99,12 +101,12 @@ public class ConversationStore implements Conversation {
     }
 
     /**
-     * Pushes a message event text to the history of conversation.
+     * Pushes a message event to the history of conversation.
      *
      * @param stage The method name to be assigned with the message
-     * @param message The message to be stored
+     * @param message The message event to be stored
      */
-    public void pushMessageToHistory(String stage, String message) {
+    public void pushEventToHistory(String stage, Message message) {
         this.history.put(stage, message);
     }
 

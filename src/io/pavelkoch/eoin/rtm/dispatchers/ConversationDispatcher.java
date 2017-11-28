@@ -94,7 +94,7 @@ public class ConversationDispatcher implements Dispatcher {
         // We check whether the method accepts the pattern in the message
         if (this.conversationMatchesPattern(annotation.pattern())) {
             conversation.setNextStage(annotation.next());
-            conversation.pushMessageToHistory(currentMethod.getName(), this.event.text());
+            conversation.pushEventToHistory(currentMethod.getName(), this.event);
 
             this.invokeConversation(module, currentMethod, conversation);
 

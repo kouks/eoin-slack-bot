@@ -33,7 +33,7 @@ public class TodoModule extends Module {
         }
 
         response.channel(event.channel())
-                .text("hey, I added time: *" + event.text() + "*, to the todo: *" + conversation.history("addTodoName") + "*")
+                .text("hey, I added time: *" + event.text() + "*, to the todo: *" + conversation.history("addTodoName").text() + "*")
                 .send();
     }
 }
